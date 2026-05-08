@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# Local configuration and generated data
+.env
+data/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
