@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import os
 from pathlib import Path
 
+DEFAULT_DATA_DIR = Path.home() / ".local" / "share" / "prediction-market-lab"
+
 
 @dataclass(frozen=True)
 class LabConfig:
@@ -16,7 +18,7 @@ class LabConfig:
     """
 
     log_level: str = "INFO"
-    data_dir: Path = Path("data")
+    data_dir: Path = DEFAULT_DATA_DIR
     enable_trading: bool = False
 
     @classmethod
@@ -24,7 +26,7 @@ class LabConfig:
         """Create config from PML_* environment variables."""
         return cls(
             log_level=os.getenv("PML_LOG_LEVEL", "INFO").upper(),
-            data_dir=Path(os.getenv("PML_DATA_DIR", "data")),
+            data_dir=Path(os.getenv("PML_DATA_DIR", str(DEFAULT_DATA_DIR))).expanduser(),
             enable_trading=_parse_bool(os.getenv("PML_ENABLE_TRADING", "false")),
         )
 

@@ -49,7 +49,23 @@ prediction-market-lab/
 
 ## Local setup
 
-No install step is required for the initial scaffold. From the repository root, run:
+With Nix flakes:
+
+```bash
+nix develop
+make check
+python -m prediction_market_lab.tui
+```
+
+With classic Nix:
+
+```bash
+nix-shell
+make check
+python -m prediction_market_lab.tui
+```
+
+Without Nix, no install step is required for the initial scaffold. From the repository root, run:
 
 ```bash
 make check
@@ -66,11 +82,44 @@ PYTHONPATH=src python -m unittest discover -s tests -v
 
 Copy `.env.example` to `.env` for local overrides if needed. The sample contains no secrets and is safe to commit. Do not commit `.env` or real API credentials.
 
+By default, generated lab data is written outside the repository at:
+
+```text
+~/.local/share/prediction-market-lab/operator_store.json
+```
+
+This gives the TUI/CLI a permanent writable home and avoids permission problems with a repo-local `data/` directory. Override it with `PML_DATA_DIR` or pass `--store path/to/operator_store.json`.
+
+## Guided TUI
+
+For early proof-of-process work, use the guided terminal UI to step through what an autonomous agent would do while keeping a human in control:
+
+```bash
+PYTHONPATH=src python -m prediction_market_lab.tui
+```
+
+The TUI shows the current lab state, explains the autonomous action it is simulating, then prompts for the human-reviewed fields before saving anything. It can:
+
+1. ask what kind of market you want to predict, use an LLM when configured, and propose candidate market searches/URLs,
+2. ask clarifying questions and teach why each question matters,
+3. save an approved candidate and automatically continue into thesis-building,
+4. evaluate whether a candidate is worth thesis-building time,
+5. build a thesis with guided prompts and a conservative default recommendation,
+6. create a candidate manually,
+7. write or update a thesis manually,
+8. validate the thesis/no-trade gate,
+9. record the agent recommendation,
+10. record the human final decision,
+11. record manual position updates, and
+12. generate the weekly review.
+
+The autonomous wizard uses `OPENAI_API_KEY` or `PML_OPENAI_API_KEY` when available. Without an API key, it falls back to deterministic offline guidance with search URLs. LLM-suggested URLs are treated as discovery/search targets until you verify the real market page and settlement rules. The wizard path is intended for early days when the human does not yet know how to find/evaluate candidates or write a thesis. It defaults to `watchlist` or `no-trade`; it does not auto-approve trades. This is intentionally human-in-the-loop. It never places trades and never calls exchange or betting APIs.
+
 ## Operator CLI
 
-The local operator CLI stores deterministic JSON records under `data/operator_store.json` by default. It is for research bookkeeping only: it never places trades and never calls exchange or betting APIs.
+The local operator CLI stores deterministic JSON records under `~/.local/share/prediction-market-lab/operator_store.json` by default. It is for research bookkeeping only: it never places trades and never calls exchange or betting APIs.
 
-Run commands with `PYTHONPATH=src python -m prediction_market_lab.operator ...`. Add `--store path/to/file.json` before the subcommand to use a different local store.
+Run guided mode with `PYTHONPATH=src python -m prediction_market_lab.tui` or run command-by-command with `PYTHONPATH=src python -m prediction_market_lab.operator ...`. Add `--store path/to/file.json` before the subcommand to use a different local store.
 
 ### Candidate markets
 
