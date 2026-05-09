@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from prediction_market_lab import LabConfig
+from prediction_market_lab.config import DEFAULT_DATA_DIR
 
 
 class LabConfigTests(unittest.TestCase):
@@ -11,7 +12,7 @@ class LabConfigTests(unittest.TestCase):
             config = LabConfig.from_env()
 
         self.assertEqual(config.log_level, "INFO")
-        self.assertEqual(str(config.data_dir), "data")
+        self.assertEqual(str(config.data_dir), str(DEFAULT_DATA_DIR))
         self.assertFalse(config.enable_trading)
 
     def test_env_overrides_are_loaded(self) -> None:

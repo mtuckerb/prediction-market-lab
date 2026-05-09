@@ -13,6 +13,8 @@ import json
 from pathlib import Path
 from typing import Any, Literal, Sequence
 
+from prediction_market_lab.config import LabConfig
+
 RecommendationKind = Literal["trade", "no-trade", "watchlist"]
 DecisionKind = Literal["approved", "rejected", "deferred"]
 PositionEventKind = Literal["entry", "exit", "mark-to-market"]
@@ -247,7 +249,7 @@ def validate_thesis(raw: dict[str, Any]) -> ValidationResult:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Local analysis-only operator workflow for Prediction Market Lab")
-    parser.add_argument("--store", type=Path, default=Path("data/operator_store.json"), help="local JSON store path")
+    parser.add_argument("--store", type=Path, default=None, help="local JSON store path; defaults to PML_DATA_DIR/operator_store.json")
     sub = parser.add_subparsers(dest="command", required=True)
 
     candidate = sub.add_parser("candidate", help="create or import candidate markets")
@@ -304,7 +306,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    store = OperatorStore(args.store)
+    store_path = args.store or LabConfig.from_env().data_dir / "operator_store.json"
+    store = OperatorStore(store_path)
     try:
         output = _run(args, store)
     except ValueError as exc:
