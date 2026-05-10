@@ -29,6 +29,10 @@ Agents are responsible for:
 - Refusing to place trades or automate betting decisions.
 - Keeping secrets out of the repository.
 
+## Operating spec
+
+The implementation plan, operating workflow, and normative data model live in [`docs/operating-spec.md`](docs/operating-spec.md). It defines the $50 bankroll, $2–$3 normal stake, $5 hard stake max, $15 open-exposure review threshold, core entities, state transitions, validation rules, no-trade triggers, safety boundaries, metrics, and scale gates.
+
 ## Repository layout
 
 ```text
@@ -37,6 +41,7 @@ prediction-market-lab/
 ├── .github/workflows/ci.yml  # First verification workflow
 ├── Makefile                  # Local check/test commands
 ├── README.md                 # Project purpose and operating boundaries
+├── docs/operating-spec.md    # Operating spec and data model
 ├── src/prediction_market_lab/
 │   ├── __init__.py
 │   ├── config.py
